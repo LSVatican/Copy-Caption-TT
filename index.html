@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Copy Caption TT</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Copy Caption TT</h1>
+            <p class="subtitle">Salin caption video TikTok dengan mudah</p>
+        </header>
+
+        <main id="input-section" class="card">
+            <div class="input-group">
+                <input type="text" id="tiktok-url" placeholder="Tempel link video TikTok di sini...">
+                <button id="btn-paste" title="Tempel dari Clipboard">Paste</button>
+            </div>
+            <button id="btn-fetch">Ambil Caption</button>
+        </main>
+
+        <section id="result-section" class="card hidden">
+            <div class="result-header">
+                <h3>Caption Ditemukan:</h3>
+                <button id="btn-close" title="Kembali ke Input">&times; Tutup</button>
+            </div>
+            <div id="caption-container" class="caption-box">
+                <p id="caption-text">Caption akan muncul di sini...</p>
+            </div>
+            <button id="btn-copy">Salin Teks</button>
+        </section>
+
+        <footer class="footer-links">
+            <a href="#" id="open-privacy">Privacy Policy</a> | 
+            <a href="#" id="open-terms">Terms of Service</a>
+        </header>
+
+        <div class="watermark">Daus XD</div>
+    </div>
+
+    <div id="modal" class="modal hidden">
+        <div class="modal-content">
+            <span id="close-modal" class="close-btn">&times;</span>
+            <div id="modal-body"></div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
