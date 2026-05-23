@@ -1,39 +1,45 @@
-// Mengambil Element DOM
+// Mengmengambil Element DOM
 const inputSection = document.getElementById('input-section');
 const resultSection = document.getElementById('result-section');
 const tiktokUrlInput = document.getElementById('tiktok-url');
-const btnClearInput = document.getElementById('btn-clear-input'); // Element Baru
-const btnPaste = document.getElementById('btn-paste');
+const btnPaste = document.getElementById('btn-paste'); // Tombol dinamis (Paste/Hapus)
 const btnFetch = document.getElementById('btn-fetch');
 const btnClose = document.getElementById('btn-close');
 const btnCopy = document.getElementById('btn-copy');
 const captionText = document.getElementById('caption-text');
 
-// 1. FITUR MONITOR INPUT & TOMBOL HAPUS ISI INPUT
-tiktokUrlInput.addEventListener('input', () => {
+// Fungsi untuk mengecek isi input dan mengubah mode tombol (Paste <=> Hapus)
+function updateInputButtonState() {
     if (tiktokUrlInput.value.trim().length > 0) {
-        btnClearInput.classList.remove('hidden'); // Munculkan tombol X jika ada isinya
+        btnPaste.innerText = 'Hapus';
+        btnPaste.classList.add('clear-mode');
+        btnPaste.setAttribute('title', 'Hapus isi input');
     } else {
-        btnClearInput.classList.add('hidden'); // Sembunyikan jika kosong
+        btnPaste.innerText = 'Paste';
+        btnPaste.classList.remove('clear-mode');
+        btnPaste.setAttribute('title', 'Tempel dari Clipboard');
     }
-});
+}
 
-btnClearInput.addEventListener('click', () => {
-    tiktokUrlInput.value = ''; // Mengosongkan input
-    btnClearInput.classList.add('hidden'); // Menyembunyikan tombol X kembali
-    tiktokUrlInput.focus();
-});
+// Jalankan fungsi setiap kali ada perubahan ketikan/isi di kolom input
+tiktokUrlInput.addEventListener('input', updateInputButtonState);
 
-// Fitur Paste Menggunakan Pop-up Perizinan Bawaan Browser
+// Fitur Tombol Dinamis (Bisa jadi Paste atau Hapus tergantung kondisi input)
 btnPaste.addEventListener('click', async () => {
-    try {
-        const text = await navigator.clipboard.readText();
-        tiktokUrlInput.value = text;
-        if (text.trim().length > 0) {
-            btnClearInput.classList.remove('hidden'); // Cek jika hasil paste ada isinya
+    if (tiktokUrlInput.value.trim().length > 0) {
+        // JIKA ADA ISINYA: Berfungsi sebagai HAPUS SEMENTARA
+        tiktokUrlInput.value = '';
+        updateInputButtonState(); // Kembalikan tombol ke mode Paste
+        tiktokUrlInput.focus();
+    } else {
+        // JIKA KOSONG: Berfungsi sebagai PASTE dari clipboard browser
+        try {
+            const text = await navigator.clipboard.readText();
+            tiktokUrlInput.value = text;
+            updateInputButtonState(); // Ubah tombol ke mode Hapus karena sudah ada isinya
+        } catch (err) {
+            alert('Gagal menempelkan teks. Pastikan Anda memberi izin akses clipboard pada browser.');
         }
-    } catch (err) {
-        alert('Gagal menempelkan teks. Pastikan Anda memberi izin akses clipboard pada browser.');
     }
 });
 
@@ -55,12 +61,7 @@ btnFetch.addEventListener('click', async () => {
         if (data && data.data && data.data.title !== undefined) {
             captionText.innerText = data.data.title || '(Video ini tidak memiliki caption)';
             
-            // Pastikan tombol dalam keadaan mode "Salin Teks" saat ada caption baru muncul
-            btnCopy.innerText = 'Salin Teks';
-            btnCopy.setAttribute('data-state', 'copy');
-            btnCopy.style.backgroundColor = '#fe2c55';
-
-            // Sembunyikan input sementara, tampilkan box caption baru
+            // Sembunyikan input sementara, tampilkan box caption
             inputSection.classList.add('hidden');
             resultSection.classList.remove('hidden');
         } else {
@@ -74,54 +75,29 @@ btnFetch.addEventListener('click', async () => {
     }
 });
 
-// 2. SAKELAR FITUR: REPLACEMENT COPY <-> HAPUS SEMENTARA
-btnCopy.addEventListener('click', () => {
-    const currentState = btnCopy.getAttribute('data-state');
-
-    if (currentState === 'copy') {
-        // --- AKSI SALIN ---
-        const textToCopy = captionText.innerText;
-        navigator.clipboard.writeText(textToCopy).then(() => {
-            // Setelah berhasil disalin, ganti tombol menjadi fitur "Hapus Sementara"
-            btnCopy.innerText = '✕ Hapus Sementara';
-            btnCopy.setAttribute('data-state', 'clear');
-            btnCopy.style.backgroundColor = '#ff4a4a'; // Opsional: ubah ke warna merah penanda hapus
-        }).catch(() => {
-            alert('Gagal menyalin teks secara otomatis.');
-        });
-    } else {
-        // --- AKSI HAPUS SEMENTARA ---
-        captionText.innerText = 'Caption akan muncul di sini...';
-        
-        // Kembalikan tombol ke fitur "Salin Teks" semula
-        btnCopy.innerText = 'Salin Teks';
-        btnCopy.setAttribute('data-state', 'copy');
-        btnCopy.style.backgroundColor = '#fe2c55'; // Balik ke warna semula
-        
-        // Sembunyikan hasil, kembalikan ke kolom input utama
-        resultSection.classList.add('hidden');
-        inputSection.classList.remove('hidden');
-        
-        // Sekaligus membersihkan kolom input link utama
-        tiktokUrlInput.value = '';
-        btnClearInput.classList.add('hidden');
-    }
-});
-
 // Fitur Close dengan Konfirmasi Kembali ke Input Link
 btnClose.addEventListener('click', () => {
     const konfirmasi = confirm('Apakah Anda ingin kembali ke halaman input?');
     if (konfirmasi) {
         tiktokUrlInput.value = '';
-        btnClearInput.classList.add('hidden');
+        updateInputButtonState(); // Pastikan tombol kembali ke mode "Paste" saat halaman direset
         resultSection.classList.add('hidden');
         inputSection.classList.remove('hidden');
-        
-        // Reset tombol copy ke state awal jika user menggunakan tombol tutup bawaan
-        btnCopy.innerText = 'Salin Teks';
-        btnCopy.setAttribute('data-state', 'copy');
-        btnCopy.style.backgroundColor = '#fe2c55';
     }
+});
+
+// Fitur Salin Teks Otomatis (Untuk area box caption hasil)
+btnCopy.addEventListener('click', () => {
+    const textToCopy = captionText.innerText;
+    navigator.clipboard.writeText(textToCopy).then(() => {
+        const originalText = btnCopy.innerText;
+        btnCopy.innerText = '✓ Tersalin!';
+        setTimeout(() => {
+            btnCopy.innerText = originalText;
+        }, 2000);
+    }).catch(() => {
+        alert('Gagal menyalin teks secara otomatis.');
+    });
 });
 
 // LOGIKA MODAL PRIVACY POLICY & TERMS
