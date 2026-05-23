@@ -59,11 +59,19 @@ header h1 {
     display: flex;
     gap: 10px;
     margin-bottom: 15px;
+    width: 100%;
+}
+
+.input-wrapper {
+    position: relative;
+    flex: 1;
+    display: flex;
+    align-items: center;
 }
 
 input[type="text"] {
-    flex: 1;
-    padding: 12px 15px;
+    width: 100%;
+    padding: 12px 40px 12px 15px; /* Padding kanan ditambah agar teks tidak tertutup tombol silang */
     border-radius: 8px;
     border: 1px solid rgba(255, 255, 255, 0.2);
     background: rgba(0, 0, 0, 0.2);
@@ -74,6 +82,26 @@ input[type="text"] {
 
 input[type="text"]:focus {
     border-color: #fe2c55;
+}
+
+/* Tombol Hapus Isi Input berbentuk huruf X */
+.clear-input-btn {
+    position: absolute;
+    right: 10px;
+    background: transparent;
+    border: none;
+    color: #888;
+    font-size: 1.3rem;
+    cursor: pointer;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s;
+}
+
+.clear-input-btn:hover {
+    color: #fe2c55;
 }
 
 button {

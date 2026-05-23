@@ -17,7 +17,10 @@
 
         <main id="input-section" class="card">
             <div class="input-group">
-                <input type="text" id="tiktok-url" placeholder="Tempel link video TikTok di sini...">
+                <div class="input-wrapper">
+                    <input type="text" id="tiktok-url" placeholder="Tempel link video TikTok di sini...">
+                    <button id="btn-clear-input" class="clear-input-btn hidden" title="Hapus Isi Input">&times;</button>
+                </div>
                 <button id="btn-paste" title="Tempel dari Clipboard">Paste</button>
             </div>
             <button id="btn-fetch">Ambil Caption</button>
@@ -31,13 +34,13 @@
             <div id="caption-container" class="caption-box">
                 <p id="caption-text">Caption akan muncul di sini...</p>
             </div>
-            <button id="btn-copy">Salin Teks</button>
+            <button id="btn-copy" data-state="copy">Salin Teks</button>
         </section>
 
         <footer class="footer-links">
             <a href="#" id="open-privacy">Privacy Policy</a> | 
             <a href="#" id="open-terms">Terms of Service</a>
-        </header>
+        </footer>
 
         <div class="watermark">Daus XD</div>
     </div>
